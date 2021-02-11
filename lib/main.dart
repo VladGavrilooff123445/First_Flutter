@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:weather/weather.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(myApp());
@@ -23,10 +25,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var currentColor = Colors.white;
+  var temp;
+
 
   void RandomColor() {
     setState(() {
       currentColor = Color(Random().nextInt(0xffffffff));
+    });
+  }
+
+  getData() async {
+    WeatherFactory wf = WeatherFactory('835a33da81d643d0d537e8c223a674cc', language: Language.UKRAINIAN);
+    Weather w = await wf.currentWeatherByCityName('Kharkiv');
+    print(w);
+    setState(() {
+      temp = w.temperature.celsius.round();
     });
   }
 
@@ -42,31 +55,21 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
       ),
       body: RaisedButton(
-        onPressed: ()=>RandomColor(),
+        onPressed: () => RandomColor(),
         color: currentColor,
         child: Container(
           alignment: Alignment.center,
           color: currentColor,
-          child: Text(
-            "Hey there",
-            style: TextStyle(fontSize: 30.0, fontFamily: "HammersmithOne"),
+          child: RaisedButton(
+            onPressed: getData,
+            child: Text("${temp}C"),
           ),
+
         ),
       ),
+
     );
+
   }
 }
 
-//onPressed: () => RandomColor(),
-/*Container(
-alignment: Alignment.center,
-color: currentColor,
-child: RaisedButton(
-onPressed: () => RandomColor(),
-materialTapTargetSize: ,
-child: Text(
-"Hey there",
-style: TextStyle(fontSize: 30.0),
-),
-color: currentColor,
-))*/
