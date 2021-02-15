@@ -24,22 +24,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var currentColor = Colors.white;
   var temp;
-
-
-  void RandomColor() {
-    setState(() {
-      currentColor = Color(Random().nextInt(0xffffffff));
-    });
-  }
+  var flt;
+  String weather;
+  var weatherIcon;
 
   getData() async {
-    WeatherFactory wf = WeatherFactory('835a33da81d643d0d537e8c223a674cc', language: Language.UKRAINIAN);
+    WeatherFactory wf = WeatherFactory('835a33da81d643d0d537e8c223a674cc',
+        language: Language.UKRAINIAN);
     Weather w = await wf.currentWeatherByCityName('Kharkiv');
-    print(w);
+    print(w.weatherDescription);
     setState(() {
       temp = w.temperature.celsius.round();
+      flt = w.tempFeelsLike.celsius.round();
+      weather = w.weatherDescription;
+      //weatherIcon = w.weatherIcon as IconData;
     });
   }
 
@@ -49,27 +48,37 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.amber[300],
         title: Text(
-          "My first mobile app",
+          "Weather application",
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
       ),
-      body: RaisedButton(
-        onPressed: () => RandomColor(),
-        color: currentColor,
-        child: Container(
-          alignment: Alignment.center,
-          color: currentColor,
-          child: RaisedButton(
-            onPressed: getData,
-            child: Text("${temp}C"),
-          ),
+      body: Container(
+        color: Colors.white,
+        alignment: Alignment.topCenter,
+        child: Card(
+            child: InkWell(
+              onTap: (){
+               getData();
+              },
+              child: Container(
+               width: 200,
+               height: 300,
+               child: Container(
+                   child: Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     crossAxisAlignment: CrossAxisAlignment.stretch,
+                     children: [
+                       Text('Температура повітря зараз: $temp'),
+                       Text('Відчувається як: $flt'),
+                       Text ('$weather')
+                     ],
+                   )
+               )
+               ),
 
-        ),
+        )),
       ),
-
     );
-
   }
 }
-
